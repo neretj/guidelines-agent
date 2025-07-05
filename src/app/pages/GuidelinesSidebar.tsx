@@ -86,7 +86,7 @@ export default function GuidelinesSidebar({ activeGuidelines, isVisible }: Guide
               {/* Reasoning */}
               <div className="bg-white rounded-md p-3 border border-gray-100">
                 <label className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-                  Analysis
+                  REASONING
                 </label>
                 <p className="text-sm text-gray-700 mt-1">
                   {guideline.matchResult.reason}

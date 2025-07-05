@@ -82,15 +82,19 @@ async function guidelineMatching(candidates: Guideline[], userMessage: string, c
 
 /**
  * Validates the initial response against guidelines and reformulates it if necessary.
+ * Returns a streaming response from OpenAI.
  */
-async function superviseAndCorrectResponse(
+async function superviseAndCorrectResponseStream(
   initialResponse: string,
   activeGuidelines: Guideline[],
   userMessage: string,
   conversationHistory: any[]
-): Promise<string> {
+): Promise<AsyncIterable<any>> {
   if (activeGuidelines.length === 0) {
-    return initialResponse;
+    // If no guidelines, return the initial response as a single chunk
+    return (async function* () {
+      yield { choices: [{ delta: { content: initialResponse } }] };
+    })();
   }
 
   const context = conversationHistory.map((m) => `${m.role}: ${m.content}`).join("\n");
@@ -122,12 +126,16 @@ async function superviseAndCorrectResponse(
       model: "gpt-4o-mini", 
       messages: [{ role: "system", content: correctionPrompt }],
       temperature: 0.2, // low creativity for precise reformulation
+      stream: true, // Enable streaming
     });
 
-    return response.choices[0].message.content || initialResponse;
+    return response;
   } catch (error) {
     console.error("Error in response correction:", error);
-    return initialResponse;
+    // Return initial response as fallback
+    return (async function* () {
+      yield { choices: [{ delta: { content: initialResponse } }] };
+    })();
   }
 }
 
@@ -184,18 +192,22 @@ export async function POST(req: Request) {
     });
     const initialResponseText = initialLlmResponse.choices[0].message.content || "";
 
-    // --- Response Validation and Correction ---
-    const finalCorrectedResponse = await superviseAndCorrectResponse(initialResponseText, activeGuidelines, userMessage, messages);
-
-    // --- Stream Final Response and Metadata ---
+    // --- Response Validation and Correction with Streaming ---
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
         // 1. Send session ID
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ sessionId })}\n\n`));
 
-        // 2. Send the final, corrected content
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content: finalCorrectedResponse })}\n\n`));
+        // 2. Get and stream the final, corrected content from OpenAI
+        const correctionStream = await superviseAndCorrectResponseStream(initialResponseText, activeGuidelines, userMessage, messages);
+        
+        for await (const chunk of correctionStream) {
+          const content = chunk.choices[0]?.delta?.content;
+          if (content) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ content })}\n\n`));
+          }
+        }
 
         // 3. Send final metadata, including the detailed matching results
         const finalData = {
