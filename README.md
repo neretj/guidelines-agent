@@ -1,6 +1,6 @@
-# Uptail - AI Agent with Dynamic Guidelines
+# AI Agent with Dynamic Guidelines
 
-An intelligent AI agent that **dynamically controls its behavior through guidelines** - inspired by [parlant.io's implementation](https://www.parlant.io/docs/concepts/customization/guidelines). The agent pulls behavioral instructions from a database and adapts its responses based on contextually relevant guidelines.
+AI agent that **dynamically controls its behavior through guidelines** - inspired by [parlant.io's implementation](https://www.parlant.io/docs/concepts/customization/guidelines). The agent pulls behavioral instructions from a database and adapts its responses based on contextually relevant guidelines.
 
 ## What it does
 
@@ -21,7 +21,7 @@ This application creates a conversational AI assistant that:
 - **Vector Search**: Cosine similarity search with semantic matching
 
 ### Core Innovation: Guidelines Engine
-The system implements a sophisticated guidelines matching pipeline:
+The system implements a guidelines matching pipeline:
 
 1. **Semantic Retrieval**: Embeds user queries and retrieves candidate guidelines using vector search
 2. **LLM-based Analysis**: Uses GPT-4o-mini to analyze each guideline and determine:
@@ -147,29 +147,9 @@ src/
 ### 3. Real-time Visualization
 - Right sidebar shows active guidelines
 - Displays relevance scores and reasoning
-- Color-coded scoring system (green = highly relevant, red = not relevant)
 
 ### 4. Response Validation
 - Dual-pass system: initial response + validation
 - Ensures AI follows all applicable guidelines
 - Automatic correction if guidelines aren't followed
 
-## Technical Decisions & Trade-offs
-
-### What I Built
-- **Sophisticated matching system**: Goes beyond simple RAG to intelligently analyze guideline applicability
-- **Transparent decision-making**: Users can see exactly why guidelines were applied
-- **Dual-pass validation**: Ensures guidelines are actually followed, not just retrieved
-- **Clean UI with three panels**: Guidelines management, chat, and active guidelines visualization
-
-### What I Prioritized
-- **Accuracy over speed**: Two-pass system ensures guidelines are properly applied
-- **Transparency**: Real-time visualization of the decision-making process
-- **User experience**: Clean, intuitive interface that makes the guidelines system understandable
-
-### What I'd Build Next
-- **Guidelines testing framework**: Automated testing of guideline effectiveness
-- **Analytics dashboard**: Track which guidelines are most/least effective
-- **Bulk guidelines import**: CSV/JSON import for large guideline sets
-- **Guidelines versioning**: Track changes and rollback capability
-- **A/B testing**: Compare different guideline configurations
