@@ -65,7 +65,7 @@ CREATE TABLE conversation_sessions (
 ### Step 1: Clone and Install
 ```bash
 git clone <repository-url>
-cd uptail
+cd guidelines-agent
 npm install
 ```
 
