@@ -228,10 +228,12 @@ export default function Dashboard() {
         showSidebar={showSidebar}
       />
 
-      <GuidelinesSidebar
-        activeGuidelines={activeGuidelinesWithResults}
-        isVisible={showSidebar}
-      />
+      {showSidebar && (
+        <GuidelinesSidebar
+          activeGuidelines={activeGuidelinesWithResults}
+          isVisible={showSidebar}
+        />
+      )}
 
       {isEditing && (
         <EditModal

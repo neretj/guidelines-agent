@@ -9,8 +9,6 @@ interface GuidelinesSidebarProps {
 }
 
 export default function GuidelinesSidebar({ activeGuidelines, isVisible }: GuidelinesSidebarProps) {
-  if (!isVisible) return null;
-
   const getScoreColor = (score: number) => {
     if (score >= 8) return 'text-green-600 bg-green-50';
     if (score >= 6) return 'text-yellow-600 bg-yellow-50';
