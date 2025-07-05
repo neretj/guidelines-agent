@@ -205,7 +205,7 @@ export default function Dashboard() {
   }).filter(Boolean) as GuidelineWithMatchResult[];
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
+    <div className="flex h-screen bg-gray-50 font-sans" style={{ width: "-webkit-fill-available" }}>
       <GuidelinePanel
         guidelines={filteredGuidelines}
         loading={loading}
