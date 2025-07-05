@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Guideline, Message, ActiveGuideline } from './types';
+import { Guideline, Message, ActiveGuideline, GuidelineMatchResult, GuidelineWithMatchResult } from './types';
 import GuidelinePanel from './GuidelinePanel';
 import ChatPanel from './ChatPanel';
 import EditModal from './EditModal';
+import GuidelinesSidebar from './GuidelinesSidebar';
 
 export default function Dashboard() {
   const [guidelines, setGuidelines] = useState<Guideline[]>([]);
@@ -20,6 +21,8 @@ export default function Dashboard() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [activeGuidelines, setActiveGuidelines] = useState<ActiveGuideline[]>([]);
   const [accomplishedGuidelines, setAccomplishedGuidelines] = useState<number[]>([]);
+  const [guidelineMatchingResults, setGuidelineMatchingResults] = useState<GuidelineMatchResult[]>([]);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   useEffect(() => {
     const loadGuidelines = async () => {
@@ -100,6 +103,11 @@ export default function Dashboard() {
                 setActiveGuidelines(parsed.activeGuidelines);
               }
               
+              if (parsed.guidelineMatchingResults) {
+                setGuidelineMatchingResults(parsed.guidelineMatchingResults);
+                setShowSidebar(true);
+              }
+              
               if (parsed.accomplishedGuidelines) {
                 setAccomplishedGuidelines(parsed.accomplishedGuidelines);
               }
@@ -175,7 +183,9 @@ export default function Dashboard() {
     setMessages([]);
     setActiveGuidelines([]);
     setAccomplishedGuidelines([]);
+    setGuidelineMatchingResults([]);
     setSessionId(null);
+    setShowSidebar(false);
   };
 
   const filteredGuidelines = guidelines.filter(g =>
@@ -183,6 +193,16 @@ export default function Dashboard() {
     g.condition.toLowerCase().includes(searchTerm.toLowerCase()) ||
     g.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Combine active guidelines with their matching results
+  const activeGuidelinesWithResults: GuidelineWithMatchResult[] = guidelineMatchingResults.map(result => {
+    const guideline = guidelines.find(g => g.id === result.guideline_id);
+    if (!guideline) return null;
+    return {
+      ...guideline,
+      matchResult: result
+    };
+  }).filter(Boolean) as GuidelineWithMatchResult[];
 
   return (
     <div className="flex h-screen bg-gray-50 font-sans">
@@ -205,6 +225,12 @@ export default function Dashboard() {
         onSubmit={handleSubmitChat}
         isLoading={isLoadingChat}
         onResetSession={handleResetSession}
+        showSidebar={showSidebar}
+      />
+
+      <GuidelinesSidebar
+        activeGuidelines={activeGuidelinesWithResults}
+        isVisible={showSidebar}
       />
 
       {isEditing && (

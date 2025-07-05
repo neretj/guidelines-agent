@@ -10,11 +10,14 @@ interface ChatPanelProps {
   onSubmit: (e: React.FormEvent) => void;
   isLoading: boolean;
   onResetSession: () => void;
+  showSidebar?: boolean;
 }
 
-export default function ChatPanel({ messages, input, onInputChange, onSubmit, isLoading, onResetSession }: ChatPanelProps) {
+export default function ChatPanel({ messages, input, onInputChange, onSubmit, isLoading, onResetSession, showSidebar = false }: ChatPanelProps) {
+  const chatWidth = showSidebar ? 'flex-1' : 'w-2/3';
+  
   return (
-    <div className="w-2/3 flex flex-col bg-white h-screen">
+    <div className={`${chatWidth} flex flex-col bg-white h-screen`}>
       <div className="p-4 border-b border-gray-200 flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-800">Test Chat</h2>
         <button onClick={onResetSession} className="text-sm text-gray-500 hover:text-gray-800 flex items-center gap-1.5">

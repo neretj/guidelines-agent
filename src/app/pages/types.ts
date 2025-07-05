@@ -28,3 +28,16 @@ export interface ActiveGuideline {
   similarity: number;
   triggered_at: string;
 }
+
+// Guideline matching result structure
+export interface GuidelineMatchResult {
+  guideline_id: number;
+  applies: boolean;
+  score: number;
+  reason: string;
+}
+
+// Extended guideline with matching context
+export interface GuidelineWithMatchResult extends Guideline {
+  matchResult: GuidelineMatchResult;
+}
