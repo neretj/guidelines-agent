@@ -9,9 +9,10 @@ const supabase = createClient(
 export const runtime = 'edge';
 
 // GET - Get specific guideline
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
     const { data, error } = await supabase
       .from('guidelines')
@@ -32,9 +33,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 }
 
 // PUT - Update guideline
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
     const body = await req.json();
     const { title, condition, action, priority, category } = body;
 
@@ -72,9 +74,10 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE - Delete guideline
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id;
+    const resolvedParams = await params;
+    const id = resolvedParams.id;
 
     // First get the guideline to show info
     const { data: guideline } = await supabase
