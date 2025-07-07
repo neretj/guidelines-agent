@@ -1,6 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
+import OpenAI from 'openai';
 
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_ANON_KEY!
@@ -45,7 +47,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       return Response.json({ error: 'Title, condition, and action are required' }, { status: 400 });
     }
 
-    // Update in database (without embedding to force regeneration)
+    // Generate embedding for the updated condition
+    let embedding = null;
+    try {
+      const embeddingResponse = await openai.embeddings.create({
+        model: 'text-embedding-3-small',
+        input: condition,
+      });
+      embedding = embeddingResponse.data[0].embedding;
+    } catch (embeddingError) {
+      console.error('Error generating embedding:', embeddingError);
+      // Continue with update even if embedding generation fails
+    }
+
+    // Update in database with the new embedding
     const { data, error } = await supabase
       .from('guidelines')
       .update({
@@ -54,7 +69,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         action,
         priority: parseInt(priority),
         category,
-        embedding: null, // Force embedding regeneration
+        embedding, // Include the new embedding
         updated_at: new Date().toISOString()
       })
       .eq('id', id)
