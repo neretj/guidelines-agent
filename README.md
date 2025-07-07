@@ -100,10 +100,9 @@ The application will be available at `http://localhost:3000`
 
 ### Step 6: Test the Guidelines Engine
 Try these sample queries to see different guidelines activate:
-- "What's your return policy?" (activates policy-related guidelines)
-- "How much does shipping cost?" (activates pricing/shipping guidelines)
-- "I'm not sure about this purchase" (activates objection-handling guidelines)
-- "Tell me about your company" (activates company information guidelines)
+- "Hello, where is my order QB-12345?" (activates order tracking guidelines)
+- "My order arrived cold and a hamburger is missing." (activates delivery problem resolution guidelines)
+- "I want to cancel my order." (activates cancellation and refund guidelines)
 
 Watch the **right sidebar** to see which guidelines are evaluated, their relevance scores, and reasoning.
 
